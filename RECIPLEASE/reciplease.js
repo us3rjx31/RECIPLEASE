@@ -75,8 +75,19 @@ searchbar.addEventListener("keypress", (event)=>{
   }
 });
 
-if (count>=5){
+/*document.addEventListener('DOMContentLoaded', () => {
+  fetchFilterRecipes(ing_list)
+})
+*/
+const next = document.getElementById("next_ing")
 
+if (count>=5){
+  var next_button = document.createElement("img");
+  next_button.src = 'Next_Arrow'
+  next_button.setAttribute("height", "768");
+  next_button.setAttribute("width", "1024");
+  next_button.setAttribute("alt", "Flower");
+  next.appendChild(next_button)
 }
 
 /*
@@ -85,3 +96,41 @@ document.getElementById("search_button").onclick = function(){
 }
 
 */
+document.addEventListener('DOMContentLoaded', () => {
+  // Function to fetch recipes and filter them by ingredients
+  function fetchAndFilterRecipes(ingredients) {
+    fetch('recipeitems-latest.json')
+      .then(response => response.json())
+      .then(recipes => {
+        // Filter recipes based on ingredients
+        const filteredRecipes = recipes.filter(recipe => {
+          // Check if the recipe contains all specified ingredients
+          return ingredients.every(ingredient =>
+            recipe.ingredients.toLowerCase().includes(ingredient.name.toLowerCase().trim())
+          );
+        });
+
+        // Display the filtered recipes
+        const app = document.getElementById('app');
+        app.innerHTML = ''; // Clear previous results
+        filteredRecipes.forEach(recipe => {
+          const div = document.createElement('div');
+          div.innerHTML = `<h2>${recipe.title}</h2><p>${recipe.ingredients}</p><a href="${recipe.href}">View Recipe</a>`;
+          app.appendChild(div);
+        });
+
+        if (filteredRecipes.length === 0) {
+          app.innerHTML = '<p>No recipes found for the given ingredients.</p>';
+        }
+      })
+      .catch(error => console.error('Error fetching JSON:', error));
+  }
+
+  // Event listener for the filter button
+  document.getElementById('filterButton').addEventListener('click', () => {
+    /*const ingredientsInput = document.getElementById('ingredients').value;
+    const ingredients = ingredientsInput.split(','); // Split input into an array of ingredients
+    */
+   fetchAndFilterRecipes(recipe_list);
+  });
+});
